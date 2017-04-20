@@ -124,7 +124,7 @@ CoinWarmStartBasis::operator=(const CoinWarmStartBasis& rhs)
     int nintA = (numArtificial_+15) >> 4;
     int size = nintS+nintA;
     if (size>maxSize_) {
-			if(structuralStatus_ != NULL) {
+      if(structuralStatus_ != NULL) {
         delete[] structuralStatus_;
         structuralStatus_ = NULL;
       }
