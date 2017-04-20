@@ -26,7 +26,10 @@ CoinWarmStartBasis::setSize(int ns, int na) {
   int size = nintS+nintA;
   if (size) {
     if (size>maxSize_) {
-      delete[] structuralStatus_;
+      if(structuralStatus_ != NULL) {
+        delete[] structuralStatus_;
+        structuralStatus_ = NULL;
+      }
       maxSize_ = size+10;
       structuralStatus_ = new char[4*maxSize_];
     }
@@ -49,7 +52,10 @@ CoinWarmStartBasis::assignBasisStatus(int ns, int na, char*& sStat,
   int size = nintS+nintA;
   if (size) {
     if (size>maxSize_) {
-      delete[] structuralStatus_;
+      if(structuralStatus_ != NULL) {
+        delete[] structuralStatus_;
+        structuralStatus_ = NULL;
+      }
       maxSize_ = size+10;
       structuralStatus_ = new char[4*maxSize_];
     }
@@ -118,7 +124,10 @@ CoinWarmStartBasis::operator=(const CoinWarmStartBasis& rhs)
     int nintA = (numArtificial_+15) >> 4;
     int size = nintS+nintA;
     if (size>maxSize_) {
-      delete[] structuralStatus_;
+			if(structuralStatus_ != NULL) {
+        delete[] structuralStatus_;
+        structuralStatus_ = NULL;
+      }
       maxSize_ = size+10;
       structuralStatus_ = new char[4*maxSize_];
     }
@@ -428,7 +437,10 @@ CoinWarmStartBasis::CoinWarmStartBasis()
 }
 CoinWarmStartBasis::~CoinWarmStartBasis()
 {
-  delete[] structuralStatus_;
+  if(structuralStatus_ != NULL) {
+    delete[] structuralStatus_;
+    structuralStatus_ = NULL;
+  }
 }
 // Returns number of basic structurals
 int
