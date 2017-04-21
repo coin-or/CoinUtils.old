@@ -28,7 +28,6 @@ CoinWarmStartBasis::setSize(int ns, int na) {
     if (size>maxSize_) {
       if(structuralStatus_ != NULL) {
         delete[] structuralStatus_;
-        structuralStatus_ = NULL;
       }
       maxSize_ = size+10;
       structuralStatus_ = new char[4*maxSize_];
@@ -54,7 +53,6 @@ CoinWarmStartBasis::assignBasisStatus(int ns, int na, char*& sStat,
     if (size>maxSize_) {
       if(structuralStatus_ != NULL) {
         delete[] structuralStatus_;
-        structuralStatus_ = NULL;
       }
       maxSize_ = size+10;
       structuralStatus_ = new char[4*maxSize_];
@@ -126,7 +124,6 @@ CoinWarmStartBasis::operator=(const CoinWarmStartBasis& rhs)
     if (size>maxSize_) {
       if(structuralStatus_ != NULL) {
         delete[] structuralStatus_;
-        structuralStatus_ = NULL;
       }
       maxSize_ = size+10;
       structuralStatus_ = new char[4*maxSize_];
