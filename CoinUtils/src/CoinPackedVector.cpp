@@ -285,7 +285,7 @@ void
 CoinPackedVector::operator+=(double value) 
 {
    std::transform(elements_, elements_ + nElements_, elements_,
-		  std::bind2nd(std::plus<double>(), value) );
+		  [value](double x) { return x + value; });
 }
 
 //-----------------------------------------------------------------------------
@@ -294,7 +294,7 @@ void
 CoinPackedVector::operator-=(double value) 
 {
    std::transform(elements_, elements_ + nElements_, elements_,
-		  std::bind2nd(std::minus<double>(), value) );
+		  [value](double x) { return x - value; });
 }
 
 //-----------------------------------------------------------------------------
@@ -303,7 +303,7 @@ void
 CoinPackedVector::operator*=(double value) 
 {
    std::transform(elements_, elements_ + nElements_, elements_,
-		  std::bind2nd(std::multiplies<double>(), value) );
+		  [value](double x) { return x * value; });
 }
 
 //-----------------------------------------------------------------------------
@@ -312,7 +312,7 @@ void
 CoinPackedVector::operator/=(double value) 
 {
    std::transform(elements_, elements_ + nElements_, elements_,
-		  std::bind2nd(std::divides<double>(), value) );
+		  [value](double x) { return x / value; });
 }
 
 //#############################################################################
