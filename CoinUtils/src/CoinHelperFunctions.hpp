@@ -41,7 +41,7 @@
     handled correctly. */
 
 template <class T> inline void
-CoinCopyN(register const T* from, const CoinBigIndex size, register T* to)
+CoinCopyN(const T* from, const CoinBigIndex size, T* to)
 {
     if (size == 0 || from == to)
 	return;
@@ -52,10 +52,10 @@ CoinCopyN(register const T* from, const CoinBigIndex size, register T* to)
 			"CoinCopyN", "");
 #endif
 
-    register CoinBigIndex n = (size + 7) / 8;
+    CoinBigIndex n = (size + 7) / 8;
     if (to > from) {
-	register const T* downfrom = from + size;
-	register T* downto = to + size;
+	const T* downfrom = from + size;
+	T* downto = to + size;
 	// Use Duff's device to copy
 	switch (size % 8) {
 	case 0: do{     *--downto = *--downfrom;
@@ -99,7 +99,7 @@ CoinCopyN(register const T* from, const CoinBigIndex size, register T* to)
     the difference down to int.  -- lh, 100823 --
 */
 template <class T> inline void
-CoinCopy(register const T* first, register const T* last, register T* to)
+CoinCopy(const T* first, const T* last, T* to)
 {
     CoinCopyN(first, static_cast<CoinBigIndex>(last-first), to);
 }
@@ -109,12 +109,12 @@ CoinCopy(register const T* first, register const T* last, register T* to)
 /** This helper function copies an array to another location. The two arrays
     must not overlap (otherwise an exception is thrown). For speed 8 entries
     are copied at a time. The arrays are given by pointers to their first
-    entries and by the size of the source array. 
+    entries and by the size of the source array.
 
-    Note JJF - the speed claim seems to be false on IA32 so I have added 
+    Note JJF - the speed claim seems to be false on IA32 so I have added
     CoinMemcpyN which can be used for atomic data */
 template <class T> inline void
-CoinDisjointCopyN(register const T* from, const CoinBigIndex size, register T* to)
+CoinDisjointCopyN(const T* from, const CoinBigIndex size, T* to)
 {
 #ifndef _MSC_VER
     if (size == 0 || from == to)
@@ -135,7 +135,7 @@ CoinDisjointCopyN(register const T* from, const CoinBigIndex size, register T* t
 	throw CoinError("overlapping arrays", "CoinDisjointCopyN", "");
 #endif
 
-    for (register CoinBigIndex n = size / 8; n > 0; --n, from += 8, to += 8) {
+    for (CoinBigIndex n = size / 8; n > 0; --n, from += 8, to += 8) {
 	to[0] = from[0];
 	to[1] = from[1];
 	to[2] = from[2];
@@ -167,8 +167,8 @@ CoinDisjointCopyN(register const T* from, const CoinBigIndex size, register T* t
     are copied at a time. The source array is given by its first and "after
     last" entry; the target array is given by its first entry. */
 template <class T> inline void
-CoinDisjointCopy(register const T* first, register const T* last,
-		 register T* to)
+CoinDisjointCopy(const T* first, const T* last,
+		 T* to)
 {
     CoinDisjointCopyN(first, static_cast<CoinBigIndex>(last - first), to);
 }
@@ -220,7 +220,7 @@ CoinCopyOfArray( const T * array, const CoinBigIndex size, T value)
         std::memcpy(arrayNew,array,size*sizeof(T));
     } else {
 	CoinBigIndex i;
-	for (i=0;i<size;i++) 
+	for (i=0;i<size;i++)
 	    arrayNew[i] = value;
     }
     return arrayNew;
@@ -249,13 +249,13 @@ CoinCopyOfArrayOrZero( const T * array , const CoinBigIndex size)
 /** This helper function copies an array to another location. The two arrays
     must not overlap (otherwise an exception is thrown). For speed 8 entries
     are copied at a time. The arrays are given by pointers to their first
-    entries and by the size of the source array. 
+    entries and by the size of the source array.
 
-    Note JJF - the speed claim seems to be false on IA32 so I have added 
+    Note JJF - the speed claim seems to be false on IA32 so I have added
     alternative coding if USE_MEMCPY defined*/
 #ifndef COIN_USE_RESTRICT
 template <class T> inline void
-CoinMemcpyN(register const T* from, const CoinBigIndex size, register T* to)
+CoinMemcpyN(const T* from, const CoinBigIndex size, T* to)
 {
 #ifndef _MSC_VER
 #ifdef USE_MEMCPY
@@ -265,7 +265,7 @@ CoinMemcpyN(register const T* from, const CoinBigIndex size, register T* to)
     if (size < 0)
 	throw CoinError("trying to copy negative number of entries",
 			"CoinMemcpyN", "");
-  
+
 #if 0
     /* There is no point to do this test. If to and from are from different
        blocks then dist is undefined, so this can crash correct code. It's
@@ -295,7 +295,7 @@ CoinMemcpyN(register const T* from, const CoinBigIndex size, register T* to)
 	throw CoinError("overlapping arrays", "CoinMemcpyN", "");
 #endif
 
-    for (register CoinBigIndex n = size / 8; n > 0; --n, from += 8, to += 8) {
+    for (CoinBigIndex n = size / 8; n > 0; --n, from += 8, to += 8) {
 	to[0] = from[0];
 	to[1] = from[1];
 	to[2] = from[2];
@@ -342,8 +342,8 @@ CoinMemcpyN(const T * COIN_RESTRICT from, CoinBigIndex size, T* COIN_RESTRICT to
     are copied at a time. The source array is given by its first and "after
     last" entry; the target array is given by its first entry. */
 template <class T> inline void
-CoinMemcpy(register const T* first, register const T* last,
-	   register T* to)
+CoinMemcpy(const T* first, const T* last,
+	   T* to)
 {
     CoinMemcpyN(first, static_cast<CoinBigIndex>(last - first), to);
 }
@@ -352,12 +352,12 @@ CoinMemcpy(register const T* first, register const T* last,
 
 /** This helper function fills an array with a given value. For speed 8 entries
     are filled at a time. The array is given by a pointer to its first entry
-    and its size. 
+    and its size.
 
-    Note JJF - the speed claim seems to be false on IA32 so I have added 
+    Note JJF - the speed claim seems to be false on IA32 so I have added
     CoinZero to allow for memset. */
 template <class T> inline void
-CoinFillN(register T* to, const CoinBigIndex size, register const T value)
+CoinFillN(T* to, const CoinBigIndex size, const T value)
 {
     if (size == 0)
 	return;
@@ -368,7 +368,7 @@ CoinFillN(register T* to, const CoinBigIndex size, register const T value)
 			"CoinFillN", "");
 #endif
 #if 1
-    for (register CoinBigIndex n = size / 8; n > 0; --n, to += 8) {
+    for (CoinBigIndex n = size / 8; n > 0; --n, to += 8) {
 	to[0] = value;
 	to[1] = value;
 	to[2] = value;
@@ -390,7 +390,7 @@ CoinFillN(register T* to, const CoinBigIndex size, register const T value)
     }
 #else
     // Use Duff's device to fill
-    register CoinBigIndex n = (size + 7) / 8;
+    CoinBigIndex n = (size + 7) / 8;
     --to;
     switch (size % 8) {
     case 0: do{     *++to = value;
@@ -412,7 +412,7 @@ CoinFillN(register T* to, const CoinBigIndex size, register const T value)
     entries are filled at a time. The array is given by its first and "after
     last" entry. */
 template <class T> inline void
-CoinFill(register T* first, register T* last, const T value)
+CoinFill(T* first, T* last, const T value)
 {
     CoinFillN(first, last - first, value);
 }
@@ -423,10 +423,10 @@ CoinFill(register T* first, register T* last, const T value)
     are filled at a time. The array is given by a pointer to its first entry
     and its size.
 
-    Note JJF - the speed claim seems to be false on IA32 so I have allowed 
+    Note JJF - the speed claim seems to be false on IA32 so I have allowed
     for memset as an alternative */
 template <class T> inline void
-CoinZeroN(register T* to, const CoinBigIndex size)
+CoinZeroN(T* to, const CoinBigIndex size)
 {
 #ifdef USE_MEMCPY
     // Use memset - seems faster on Intel with gcc
@@ -447,7 +447,7 @@ CoinZeroN(register T* to, const CoinBigIndex size)
 			"CoinZeroN", "");
 #endif
 #if 1
-    for (register CoinBigIndex n = size / 8; n > 0; --n, to += 8) {
+    for (CoinBigIndex n = size / 8; n > 0; --n, to += 8) {
 	to[0] = 0;
 	to[1] = 0;
 	to[2] = 0;
@@ -469,7 +469,7 @@ CoinZeroN(register T* to, const CoinBigIndex size)
     }
 #else
     // Use Duff's device to fill
-    register CoinBigIndex n = (size + 7) / 8;
+    CoinBigIndex n = (size + 7) / 8;
     --to;
     switch (size % 8) {
     case 0: do{     *++to = 0;
@@ -491,7 +491,7 @@ CoinCheckDoubleZero(double * to, const CoinBigIndex size)
 {
     CoinBigIndex n=0;
     for (CoinBigIndex j=0;j<size;j++) {
-	if (to[j]) 
+	if (to[j])
 	    n++;
     }
     if (n) {
@@ -505,7 +505,7 @@ CoinCheckIntZero(int * to, const CoinBigIndex size)
 {
     CoinBigIndex n=0;
     for (CoinBigIndex j=0;j<size;j++) {
-	if (to[j]) 
+	if (to[j])
 	    n++;
     }
     if (n) {
@@ -521,7 +521,7 @@ CoinCheckIntZero(int * to, const CoinBigIndex size)
     entries are filled at a time. The array is given by its first and "after
     last" entry. */
 template <class T> inline void
-CoinZero(register T* first, register T* last)
+CoinZero(T* first, T* last)
 {
     CoinZeroN(first, last - first);
 }
@@ -547,7 +547,7 @@ inline char * CoinStrdup(const char * name)
     This function was introduced because for some reason compiler tend to
     handle the <code>max()</code> function differently. */
 template <class T> inline T
-CoinMax(register const T x1, register const T x2)
+CoinMax(const T x1, const T x2)
 {
     return (x1 > x2) ? x1 : x2;
 }
@@ -558,7 +558,7 @@ CoinMax(register const T x1, register const T x2)
     This function was introduced because for some reason compiler tend to
     handle the min() function differently. */
 template <class T> inline T
-CoinMin(register const T x1, register const T x2)
+CoinMin(const T x1, const T x2)
 {
     return (x1 < x2) ? x1 : x2;
 }
@@ -580,7 +580,7 @@ CoinAbs(const T value)
     according to operator<. The array is given by a pointer to its first entry
     and by its size. */
 template <class T> inline bool
-CoinIsSorted(register const T* first, const CoinBigIndex size)
+CoinIsSorted(const T* first, const CoinBigIndex size)
 {
     if (size == 0)
 	return true;
@@ -592,7 +592,7 @@ CoinIsSorted(register const T* first, const CoinBigIndex size)
 #if 1
     // size1 is the number of comparisons to be made
     const CoinBigIndex size1 = size  - 1;
-    for (register CoinBigIndex n = size1 / 8; n > 0; --n, first += 8) {
+    for (CoinBigIndex n = size1 / 8; n > 0; --n, first += 8) {
 	if (first[8] < first[7]) return false;
 	if (first[7] < first[6]) return false;
 	if (first[6] < first[5]) return false;
@@ -614,12 +614,12 @@ CoinIsSorted(register const T* first, const CoinBigIndex size)
     case 0: break;
     }
 #else
-    register const T* next = first;
-    register const T* last = first + size;
+    const T* next = first;
+    const T* last = first + size;
     for (++next; next != last; first = next, ++next)
 	if (*next < *first)
 	    return false;
-#endif   
+#endif
     return true;
 }
 
@@ -629,7 +629,7 @@ CoinIsSorted(register const T* first, const CoinBigIndex size)
     according to operator<. The array is given by its first and "after
     last" entry. */
 template <class T> inline bool
-CoinIsSorted(register const T* first, register const T* last)
+CoinIsSorted(const T* first, const T* last)
 {
     return CoinIsSorted(first, static_cast<CoinBigIndex>(last - first));
 }
@@ -640,7 +640,7 @@ CoinIsSorted(register const T* first, register const T* last)
     etc. For speed 8 entries are filled at a time. The array is given by a
     pointer to its first entry and its size. */
 template <class T> inline void
-CoinIotaN(register T* first, const CoinBigIndex size, register T init)
+CoinIotaN(T* first, const CoinBigIndex size, T init)
 {
     if (size == 0)
 	return;
@@ -650,7 +650,7 @@ CoinIotaN(register T* first, const CoinBigIndex size, register T init)
 	throw CoinError("negative number of entries", "CoinIotaN", "");
 #endif
 #if 1
-    for (register CoinBigIndex n = size / 8; n > 0; --n, first += 8, init += 8) {
+    for (CoinBigIndex n = size / 8; n > 0; --n, first += 8, init += 8) {
 	first[0] = init;
 	first[1] = init + 1;
 	first[2] = init + 2;
@@ -672,7 +672,7 @@ CoinIotaN(register T* first, const CoinBigIndex size, register T init)
     }
 #else
     // Use Duff's device to fill
-    register CoinBigIndex n = (size + 7) / 8;
+    CoinBigIndex n = (size + 7) / 8;
     --first;
     --init;
     switch (size % 8) {
@@ -708,7 +708,7 @@ CoinIota(T* first, const T* last, T init)
     integer array specified by the last two arguments (again, first and "after
     last" entry). */
 template <class T> inline T *
-CoinDeleteEntriesFromArray(register T * arrayFirst, register T * arrayLast,
+CoinDeleteEntriesFromArray(T * arrayFirst, T * arrayLast,
 			   const int * firstDelPos, const int * lastDelPos)
 {
     CoinBigIndex delNum = static_cast<CoinBigIndex>(lastDelPos - firstDelPos);
@@ -775,7 +775,7 @@ CoinDeleteEntriesFromArray(register T * arrayFirst, register T * arrayLast,
 inline double CoinDrand48 (bool isSeed = false, unsigned int seed = 1)
 {
   static unsigned int last = 123456;
-  if (isSeed) { 
+  if (isSeed) {
     last = seed;
   } else {
     last = 1664525*last+1013904223;
@@ -812,7 +812,7 @@ inline void CoinSeedRandom(int iseed) { srand48(iseed + 69822); }
 
 //#############################################################################
 
-/** This function figures out whether file names should contain slashes or 
+/** This function figures out whether file names should contain slashes or
     backslashes as directory separator */
 inline char CoinFindDirSeparator()
 {
@@ -826,7 +826,7 @@ inline char CoinFindDirSeparator()
 	buf = 0;
 	size = 2*size;
     }
-    // if first char is '/' then it's unix and the dirsep is '/'. otherwise we 
+    // if first char is '/' then it's unix and the dirsep is '/'. otherwise we
     // assume it's dos and the dirsep is '\'
     char dirsep = buf[0] == '/' ? '/' : '\\';
     delete[] buf;
@@ -866,7 +866,7 @@ template <class T> inline void CoinSwap (T &x, T &y)
 
 //#############################################################################
 
-/** This helper function copies an array to file 
+/** This helper function copies an array to file
     Returns 0 if OK, 1 if bad write.
 */
 
@@ -885,7 +885,7 @@ CoinToFile( const T* array, CoinBigIndex size, FILE * fp)
 	    return 1;
     } else {
 	size = 0;
-	numberWritten = 
+	numberWritten =
 	    static_cast<CoinBigIndex>(fwrite(&size,sizeof(int),1,fp));
 	if (numberWritten!=1)
 	    return 1;
@@ -930,7 +930,7 @@ CoinFromFile( T* &array, CoinBigIndex size, FILE * fp, CoinBigIndex & newSize)
 #if 0
 inline double CoinCbrt(double x)
 {
-#if defined(_MSC_VER) 
+#if defined(_MSC_VER)
     return pow(x,(1./3.));
 #else
     return cbrt(x);
@@ -940,9 +940,9 @@ inline double CoinCbrt(double x)
 
 //-----------------------------------------------------------------------------
 
-/// This helper returns "sizeof" as an int 
+/// This helper returns "sizeof" as an int
 #define CoinSizeofAsInt(type) (static_cast<int>(sizeof(type)))
-/// This helper returns "strlen" as an int 
+/// This helper returns "strlen" as an int
 inline int
 CoinStrlenAsInt(const char * string)
 {
@@ -962,7 +962,7 @@ public:
   { seed_=12345678;}
   /** Constructor wih seed. */
   CoinThreadRandom(int seed)
-  { 
+  {
     seed_ = seed;
   }
   /** Destructor */
@@ -980,18 +980,18 @@ public:
   }
 
   //@}
-  
+
   /**@name Sets/gets */
 
   //@{
   /** Set seed. */
   inline void setSeed(int seed)
-  { 
+  {
     seed_ = seed;
   }
   /** Get seed. */
   inline unsigned int getSeed() const
-  { 
+  {
     return seed_;
   }
   /// return a random number
@@ -1005,14 +1005,14 @@ public:
   /// make more random (i.e. for startup)
   inline void randomize(int n=0)
   {
-    if (!n) 
+    if (!n)
       n=seed_ & 255;
     for (int i=0;i<n;i++)
       randomDouble();
   }
   //@}
-  
-  
+
+
 protected:
   /**@name Data members
      The data members are protected to allow access for derived classes. */
@@ -1035,7 +1035,7 @@ public:
   { memcpy(seed_,seed,3*sizeof(unsigned short));}
   /** Constructor wih seed. */
   CoinThreadRandom(int seed)
-  { 
+  {
     union { int i[2]; unsigned short int s[4];} put;
     put.i[0]=seed;
     put.i[1]=seed;
@@ -1056,7 +1056,7 @@ public:
   }
 
   //@}
-  
+
   /**@name Sets/gets */
 
   //@{
@@ -1065,7 +1065,7 @@ public:
   { memcpy(seed_,seed,3*sizeof(unsigned short));}
   /** Set seed. */
   inline void setSeed(int seed)
-  { 
+  {
     union { int i[2]; unsigned short int s[4];} put;
     put.i[0]=seed;
     put.i[1]=seed;
@@ -1094,8 +1094,8 @@ public:
       randomDouble();
   }
   //@}
-  
-  
+
+
 protected:
   /**@name Data members
      The data members are protected to allow access for derived classes. */
